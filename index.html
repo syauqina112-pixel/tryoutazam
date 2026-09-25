@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏆 Perangkingan UTBK 2027</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f8;
+    color: #1f2937;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 28px; }
+  h1 { font-size: 1.8rem; color: #1e3a8a; }
+  p.subtitle { color: #6b7280; margin-top: 6px; font-size: 0.95rem; }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+  }
+
+  .upload-area {
+    border: 2px dashed #93c5fd;
+    border-radius: 10px;
+    padding: 32px 20px;
+    text-align: center;
+    background: #f0f9ff;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .upload-area:hover { background: #e0f2fe; border-color: #3b82f6; }
+  .upload-area.dragover { background: #dbeafe; border-color: #2563eb; }
+  .upload-area input { display: none; }
+  .upload-area strong { color: #1e40af; }
+
+  .file-list { margin-top: 14px; font-size: 0.9rem; }
+  .file-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f9fafb;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    border-left: 3px solid #3b82f6;
+  }
+
+  button {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  button:hover:not(:disabled) { background: #1d4ed8; }
+  button:disabled { background: #9ca3af; cursor: not-allowed; }
+  button.full { width: 100%; margin-top: 16px; }
+
+  .status { text-align: center; color: #6b7280; margin-top: 12px; font-size: 0.9rem; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+  th { background: #1e3a8a; color: #fff; font-weight: 600; position: sticky; top: 0; }
+  tbody tr:nth-child(even) { background: #f9fafb; }
+  tbody tr:hover { background: #eff6ff; }
+  .rank-1 { background: #fef3c7 !important; font-weight: 600; }
+  .rank-2 { background: #f3f4f6 !important; }
+  .rank-3 { background: #fed7aa !important; }
+  .total-col { font-weight: 700; color: #1e40af; text-align: right; }
+  .num-col { text-align: center; }
+
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .result-header h2 { font-size: 1.15rem; color: #1e3a8a; }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🏆 Perangkingan UTBK 2027</h1>
+    <p class="subtitle">Upload file PDF tryout → total nilai dihitung → ranking otomatis</p>
+  </header>
+
+  <!-- Upload -->
+  <div class="card">
+    <div class="upload-area" id="uploadArea">
+      <input type="file" id="fileInput" accept="application/pdf" multiple>
+      <p><strong>Klik</strong> atau <strong>drag & drop</strong> file PDF di sini</p>
+      <p style="font-size:0.85rem;color:#6b7280;margin-top:6px">Bisa pilih beberapa file sekaligus</p>
+    </div>
+    <div class="file-list" id="fileList"></div>
+    <button id="btnProses" class="full" disabled>🚀 Proses Perangkingan</button>
+    <p class="status" id="status"></p>
+  </div>
+
+  <!-- Hasil -->
+  <div class="card hidden" id="resultCard">
+    <div class="result-header">
+      <h2>📊 Hasil Perangkingan</h2>
+      <button onclick="downloadCSV()" style="padding:8px 14px;font-size:0.85rem">💾 Download CSV</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table id="resultTable">
+        <thead>
+          <tr>
+            <th>Peringkat</th>
+            <th>Nama</th>
+            <th>Kelas</th>
+            <th>Nilai</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="status" id="summary"></p>
+  </div>
+</div>
+
+<script>
+// Set worker pdf.js
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+const fileInput = document.getElementById("fileInput");
+const uploadArea = document.getElementById("uploadArea");
+const fileList = document.getElementById("fileList");
+const btnProses = document.getElementById("btnProses");
+const statusEl = document.getElementById("status");
+const resultCard = document.getElementById("resultCard");
+const resultBody = document.querySelector("#resultTable tbody");
+const summaryEl = document.getElementById("summary");
+
+let files = [];
+let dataHasil = [];
+
+// ==============================
+// UPLOAD HANDLER
+// ==============================
+uploadArea.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", e => tambahFile([...e.target.files]));
+
+["dragover", "dragenter"].forEach(ev =>
+  uploadArea.addEventListener(ev, e => { e.preventDefault(); uploadArea.classList.add("dragover"); })
+);
+["dragleave", "drop"].forEach(ev =>
+  uploadArea.addEventListener(ev, e => { e.preventDefault(); uploadArea.classList.remove("dragover"); })
+);
+uploadArea.addEventListener("drop", e => tambahFile([...e.dataTransfer.files]));
+
+function tambahFile(baru) {
+  baru.forEach(f => {
+    if (f.type === "application/pdf" && !files.some(x => x.name === f.name)) {
+      files.push(f);
+    }
+  });
+  renderFileList();
+}
+
+function renderFileList() {
+  fileList.innerHTML = files.map(f =>
+    `<div class="file-item"><span>📄 ${f.name}</span><span>${(f.size/1024).toFixed(0)} KB</span></div>`
+  ).join("");
+  btnProses.disabled = files.length === 0;
+  if (files.length === 0) statusEl.textContent = "";
+}
+
+// ==============================
+// PARSING 1 BARIS
+// Format: NO + NAMA + KELAS(12A/B/C) + nilai-nilai
+// ==============================
+function parseBaris(teks) {
+  teks = teks.trim();
+  const pola = /^(\d+)([A-Za-z\.\'\s\-]+?)(12[A-C])((?:\s*\d+)*)$/;
+  const m = teks.match(pola);
+  if (!m) return null;
+
+  const no = parseInt(m[1]);
+  const nama = m[2].trim();
+  const kelas = m[3];
+  const nilai = m[4].trim() ? m[4].trim().split(/\s+/).map(Number) : [];
+  return { no, nama, kelas, nilai };
+}
+
+// ==============================
+// BACA 1 FILE PDF
+// ==============================
+async function bacaPDF(file) {
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  const hasil = [];
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const konten = await page.getTextContent();
+
+    // Gabungkan teks per baris berdasarkan posisi Y
+    const barisMap = new Map();
+    konten.items.forEach(item => {
+      const y = Math.round(item.transform[5]);
+      if (!barisMap.has(y)) barisMap.set(y, []);
+      barisMap.get(y).push(item.str);
+    });
+
+    // Urutkan baris dari atas ke bawah
+    const ys = [...barisMap.keys()].sort((a, b) => b - a);
+    ys.forEach(y => {
+      const teks = barisMap.get(y).join(" ").replace(/\s+/g, " ").trim();
+      const parsed = parseBaris(teks);
+      if (parsed) hasil.push(parsed);
+    });
+  }
+  return hasil;
+}
+
+// ==============================
+// PROSES UTAMA
+// ==============================
+btnProses.addEventListener("click", async () => {
+  btnProses.disabled = true;
+  resultCard.classList.add("hidden");
+  statusEl.textContent = "⏳ Membaca file PDF...";
+
+  try {
+    const dataSiswa = new Map();
+
+    for (const f of files) {
+      statusEl.textContent = `⏳ Membaca: ${f.name}`;
+      const hasil = await bacaPDF(f);
+      hasil.forEach(({ nama, kelas, nilai }) => {
+        if (!dataSiswa.has(nama)) dataSiswa.set(nama, { kelas, nilai: [] });
+        dataSiswa.get(nama).nilai.push(...nilai);
+      });
+    }
+
+    if (dataSiswa.size === 0) {
+      statusEl.textContent = "❌ Tidak ada data siswa yang terbaca. Cek format PDF.";
+      btnProses.disabled = false;
+      return;
+    }
+
+    // Buat array + hitung total
+    dataHasil = [...dataSiswa.entries()].map(([nama, info]) => ({
+      nama,
+      kelas: info.kelas,
+      nilai: info.nilai,
+      total: info.nilai.reduce((a, b) => a + b, 0)
+    }));
+
+    // Urutkan dari tertinggi
+    dataHasil.sort((a, b) => b.total - a.total);
+
+    renderTabel();
+    statusEl.textContent = "✅ Selesai!";
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = "❌ Error: " + err.message;
+  } finally {
+    btnProses.disabled = false;
+  }
+});
+
+// ==============================
+// RENDER TABEL
+// ==============================
+function renderTabel() {
+  resultBody.innerHTML = dataHasil.map((s, i) => {
+    const rank = i + 1;
+    const cls = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "";
+    return `<tr class="${cls}">
+      <td class="num-col">${rank}</td>
+      <td>${s.nama}</td>
+      <td class="num-col">${s.kelas}</td>
+      <td>${s.nilai.join(", ") || "-"}</td>
+      <td class="total-col">${s.total}</td>
+    </tr>`;
+  }).join("");
+
+  summaryEl.textContent = `Total siswa: ${dataHasil.length}`;
+  resultCard.classList.remove("hidden");
+}
+
+// ==============================
+// DOWNLOAD CSV
+// ==============================
+function downloadCSV() {
+  const header = ["Peringkat", "Nama", "Kelas", "Nilai", "Total"];
+  const rows = dataHasil.map((s, i) => [
+    i + 1, `"${s.nama}"`, s.kelas, `"${s.nilai.join(", ")}"`, s.total
+  ]);
+  const csv = [header, ...rows].map(r => r.join(",")).join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "hasil_ranking.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
