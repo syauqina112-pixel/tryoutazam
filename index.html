@@ -14,7 +14,7 @@
     padding: 24px;
     line-height: 1.5;
   }
-  .container { max-width: 900px; margin: 0 auto; }
+  .container { max-width: 1000px; margin: 0 auto; }
   header { text-align: center; margin-bottom: 28px; }
   h1 { font-size: 1.8rem; color: #1e3a8a; }
   p.subtitle { color: #6b7280; margin-top: 6px; font-size: 0.95rem; }
@@ -26,11 +26,19 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     margin-bottom: 20px;
   }
+  .card h2 {
+    font-size: 1.1rem;
+    color: #1e3a8a;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
   .upload-area {
     border: 2px dashed #93c5fd;
     border-radius: 10px;
-    padding: 32px 20px;
+    padding: 26px 20px;
     text-align: center;
     background: #f0f9ff;
     cursor: pointer;
@@ -41,115 +49,190 @@
   .upload-area input { display: none; }
   .upload-area strong { color: #1e40af; }
 
-  .file-list { margin-top: 14px; font-size: 0.9rem; }
+  .file-list { margin-top: 12px; font-size: 0.88rem; }
   .file-item {
     display: flex;
     justify-content: space-between;
-    padding: 8px 12px;
+    align-items: center;
+    padding: 7px 12px;
     background: #f9fafb;
     border-radius: 6px;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     border-left: 3px solid #3b82f6;
+  }
+  .file-item button {
+    background: #ef4444;
+    padding: 3px 9px;
+    font-size: 0.75rem;
+    border-radius: 5px;
   }
 
   button {
     background: #2563eb;
     color: #fff;
     border: none;
-    padding: 11px 22px;
+    padding: 10px 18px;
     border-radius: 8px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.2s;
+    transition: 0.15s;
   }
   button:hover:not(:disabled) { background: #1d4ed8; }
   button:disabled { background: #9ca3af; cursor: not-allowed; }
-  button.full { width: 100%; margin-top: 16px; }
+  button.full { width: 100%; margin-top: 14px; }
+  button.success { background: #059669; }
+  button.success:hover { background: #047857; }
+  button.danger { background: #dc2626; padding: 4px 10px; font-size: 0.8rem; }
+  button.danger:hover { background: #b91c1c; }
+  button.ghost { background: #f3f4f6; color: #374151; }
+  button.ghost:hover { background: #e5e7eb; }
+  button.small { padding: 6px 12px; font-size: 0.82rem; }
 
-  .status { text-align: center; color: #6b7280; margin-top: 12px; font-size: 0.9rem; }
+  .status { text-align: center; color: #6b7280; margin-top: 10px; font-size: 0.88rem; }
 
+  /* Form input manual */
+  .form-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr auto;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  input[type="text"], input[type="number"] {
+    padding: 9px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    width: 100%;
+  }
+  input:focus { outline: 2px solid #93c5fd; border-color: #3b82f6; }
+  .hint { font-size: 0.78rem; color: #6b7280; margin-bottom: 10px; }
+
+  /* Tabel */
+  .table-wrap { overflow-x: auto; max-height: 520px; }
   table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
   th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-  th { background: #1e3a8a; color: #fff; font-weight: 600; position: sticky; top: 0; }
+  th { background: #1e3a8a; color: #fff; font-weight: 600; position: sticky; top: 0; z-index: 2; }
   tbody tr:nth-child(even) { background: #f9fafb; }
   tbody tr:hover { background: #eff6ff; }
   .rank-1 { background: #fef3c7 !important; font-weight: 600; }
-  .rank-2 { background: #f3f4f6 !important; }
+  .rank-2 { background: #e5e7eb !important; }
   .rank-3 { background: #fed7aa !important; }
   .total-col { font-weight: 700; color: #1e40af; text-align: right; }
   .num-col { text-align: center; }
+
+  /* Editable cell */
+  .editable {
+    padding: 5px 8px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: transparent;
+    font-size: 0.88rem;
+    font-family: inherit;
+    width: 100%;
+  }
+  .editable:hover { background: #f3f4f6; border-color: #d1d5db; }
+  .editable:focus { background: #fff; border-color: #3b82f6; outline: none; }
 
   .result-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 8px;
   }
-  .result-header h2 { font-size: 1.15rem; color: #1e3a8a; }
+  .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
 
   .hidden { display: none; }
+
+  @media (max-width: 640px) {
+    .form-row { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 <div class="container">
   <header>
     <h1>🏆 Perangkingan UTBK 2027</h1>
-    <p class="subtitle">Upload file PDF tryout → total nilai dihitung → ranking otomatis</p>
+    <p class="subtitle">Upload PDF, tambah nilai manual, atau keduanya — ranking otomatis</p>
   </header>
 
-  <!-- Upload -->
+  <!-- 1. Upload PDF -->
   <div class="card">
+    <h2>📄 Upload File PDF (opsional)</h2>
     <div class="upload-area" id="uploadArea">
       <input type="file" id="fileInput" accept="application/pdf" multiple>
       <p><strong>Klik</strong> atau <strong>drag & drop</strong> file PDF di sini</p>
-      <p style="font-size:0.85rem;color:#6b7280;margin-top:6px">Bisa pilih beberapa file sekaligus</p>
+      <p style="font-size:0.83rem;color:#6b7280;margin-top:5px">Bisa pilih beberapa file sekaligus</p>
     </div>
     <div class="file-list" id="fileList"></div>
-    <button id="btnProses" class="full" disabled>🚀 Proses Perangkingan</button>
-    <p class="status" id="status"></p>
+    <button id="btnProsesPdf" class="full" disabled>🚀 Baca PDF & Tambahkan ke Data</button>
+    <p class="status" id="statusPdf"></p>
   </div>
 
-  <!-- Hasil -->
-  <div class="card hidden" id="resultCard">
-    <div class="result-header">
-      <h2>📊 Hasil Perangkingan</h2>
-      <button onclick="downloadCSV()" style="padding:8px 14px;font-size:0.85rem">💾 Download CSV</button>
+  <!-- 2. Input Manual -->
+  <div class="card">
+    <h2>✏️ Tambah / Edit Nilai Manual</h2>
+    <p class="hint">Isi nama, kelas, dan nilai tryout (pisahkan dengan koma, mis. <code>85, 92</code>). Kosongkan nilai kalau belum ada.</p>
+    <div class="form-row">
+      <input type="text" id="inNama" placeholder="Nama siswa">
+      <input type="text" id="inKelas" placeholder="Kelas (12A)">
+      <input type="text" id="inNilai" placeholder="Nilai, mis. 85, 92">
+      <button id="btnTambah" class="success">➕ Tambah</button>
     </div>
-    <div style="overflow-x:auto">
+    <p class="status" id="statusManual"></p>
+  </div>
+
+  <!-- 3. Hasil -->
+  <div class="card hidden" id="resultCard">
+    <h2>
+      📊 Hasil Perangkingan
+      <span style="font-size:0.85rem;font-weight:400;color:#6b7280" id="summary"></span>
+    </h2>
+    <div class="result-header">
+      <div class="btn-group">
+        <button onclick="downloadCSV()" class="small">💾 Download CSV</button>
+        <button onclick="resetSemua()" class="small ghost">🗑️ Reset Semua</button>
+      </div>
+    </div>
+    <p class="hint">💡 Klik nama, kelas, atau nilai langsung di tabel untuk mengedit. Perubahan otomatis dihitung ulang.</p>
+    <div class="table-wrap">
       <table id="resultTable">
         <thead>
           <tr>
-            <th>Peringkat</th>
+            <th style="width:70px">Peringkat</th>
             <th>Nama</th>
-            <th>Kelas</th>
+            <th style="width:90px">Kelas</th>
             <th>Nilai</th>
-            <th>Total</th>
+            <th style="width:90px">Total</th>
+            <th style="width:60px">Aksi</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
-    <p class="status" id="summary"></p>
   </div>
 </div>
 
 <script>
-// Set worker pdf.js
+// Worker pdf.js
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
 const fileInput = document.getElementById("fileInput");
 const uploadArea = document.getElementById("uploadArea");
 const fileList = document.getElementById("fileList");
-const btnProses = document.getElementById("btnProses");
-const statusEl = document.getElementById("status");
+const btnProsesPdf = document.getElementById("btnProsesPdf");
+const statusPdf = document.getElementById("statusPdf");
+const statusManual = document.getElementById("statusManual");
 const resultCard = document.getElementById("resultCard");
 const resultBody = document.querySelector("#resultTable tbody");
 const summaryEl = document.getElementById("summary");
 
 let files = [];
-let dataHasil = [];
+let dataSiswa = new Map();   // nama → { kelas, nilai[] }
 
 // ==============================
 // UPLOAD HANDLER
@@ -175,51 +258,49 @@ function tambahFile(baru) {
 }
 
 function renderFileList() {
-  fileList.innerHTML = files.map(f =>
-    `<div class="file-item"><span>📄 ${f.name}</span><span>${(f.size/1024).toFixed(0)} KB</span></div>`
+  fileList.innerHTML = files.map((f, i) =>
+    `<div class="file-item">
+      <span>📄 ${f.name} <small style="color:#9ca3af">(${(f.size/1024).toFixed(0)} KB)</small></span>
+      <button class="danger" onclick="hapusFile(${i})">Hapus</button>
+    </div>`
   ).join("");
-  btnProses.disabled = files.length === 0;
-  if (files.length === 0) statusEl.textContent = "";
+  btnProsesPdf.disabled = files.length === 0;
+}
+
+function hapusFile(i) {
+  files.splice(i, 1);
+  renderFileList();
 }
 
 // ==============================
-// PARSING 1 BARIS
-// Format: NO + NAMA + KELAS(12A/B/C) + nilai-nilai
+// PARSING PDF
 // ==============================
 function parseBaris(teks) {
   teks = teks.trim();
   const pola = /^(\d+)([A-Za-z\.\'\s\-]+?)(12[A-C])((?:\s*\d+)*)$/;
   const m = teks.match(pola);
   if (!m) return null;
-
-  const no = parseInt(m[1]);
-  const nama = m[2].trim();
-  const kelas = m[3];
-  const nilai = m[4].trim() ? m[4].trim().split(/\s+/).map(Number) : [];
-  return { no, nama, kelas, nilai };
+  return {
+    no: parseInt(m[1]),
+    nama: m[2].trim(),
+    kelas: m[3],
+    nilai: m[4].trim() ? m[4].trim().split(/\s+/).map(Number) : []
+  };
 }
 
-// ==============================
-// BACA 1 FILE PDF
-// ==============================
 async function bacaPDF(file) {
   const buf = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
   const hasil = [];
-
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const konten = await page.getTextContent();
-
-    // Gabungkan teks per baris berdasarkan posisi Y
     const barisMap = new Map();
     konten.items.forEach(item => {
       const y = Math.round(item.transform[5]);
       if (!barisMap.has(y)) barisMap.set(y, []);
       barisMap.get(y).push(item.str);
     });
-
-    // Urutkan baris dari atas ke bawah
     const ys = [...barisMap.keys()].sort((a, b) => b - a);
     ys.forEach(y => {
       const teks = barisMap.get(y).join(" ").replace(/\s+/g, " ").trim();
@@ -230,90 +311,189 @@ async function bacaPDF(file) {
   return hasil;
 }
 
-// ==============================
-// PROSES UTAMA
-// ==============================
-btnProses.addEventListener("click", async () => {
-  btnProses.disabled = true;
-  resultCard.classList.add("hidden");
-  statusEl.textContent = "⏳ Membaca file PDF...";
-
+btnProsesPdf.addEventListener("click", async () => {
+  btnProsesPdf.disabled = true;
+  statusPdf.textContent = "⏳ Membaca PDF...";
   try {
-    const dataSiswa = new Map();
-
+    let total = 0;
     for (const f of files) {
-      statusEl.textContent = `⏳ Membaca: ${f.name}`;
+      statusPdf.textContent = `⏳ Membaca: ${f.name}`;
       const hasil = await bacaPDF(f);
       hasil.forEach(({ nama, kelas, nilai }) => {
         if (!dataSiswa.has(nama)) dataSiswa.set(nama, { kelas, nilai: [] });
         dataSiswa.get(nama).nilai.push(...nilai);
+        total++;
       });
     }
-
-    if (dataSiswa.size === 0) {
-      statusEl.textContent = "❌ Tidak ada data siswa yang terbaca. Cek format PDF.";
-      btnProses.disabled = false;
-      return;
-    }
-
-    // Buat array + hitung total
-    dataHasil = [...dataSiswa.entries()].map(([nama, info]) => ({
-      nama,
-      kelas: info.kelas,
-      nilai: info.nilai,
-      total: info.nilai.reduce((a, b) => a + b, 0)
-    }));
-
-    // Urutkan dari tertinggi
-    dataHasil.sort((a, b) => b.total - a.total);
-
-    renderTabel();
-    statusEl.textContent = "✅ Selesai!";
+    statusPdf.textContent = `✅ ${total} baris siswa dibaca dari ${files.length} file.`;
+    renderHasil();
   } catch (err) {
     console.error(err);
-    statusEl.textContent = "❌ Error: " + err.message;
+    statusPdf.textContent = "❌ Error: " + err.message;
   } finally {
-    btnProses.disabled = false;
+    btnProsesPdf.disabled = false;
   }
+});
+
+// ==============================
+// INPUT MANUAL
+// ==============================
+document.getElementById("btnTambah").addEventListener("click", () => {
+  const nama = document.getElementById("inNama").value.trim();
+  const kelas = document.getElementById("inKelas").value.trim() || "-";
+  const nilaiRaw = document.getElementById("inNilai").value.trim();
+
+  if (!nama) {
+    statusManual.textContent = "❌ Nama tidak boleh kosong.";
+    return;
+  }
+
+  const nilai = nilaiRaw
+    ? nilaiRaw.split(/[,\s]+/).map(Number).filter(n => !isNaN(n))
+    : [];
+
+  if (dataSiswa.has(nama)) {
+    // Gabung nilai kalau nama sama
+    const lama = dataSiswa.get(nama);
+    lama.nilai.push(...nilai);
+    if (kelas !== "-") lama.kelas = kelas;
+    statusManual.textContent = `✏️ Nilai ${nama} diperbarui.`;
+  } else {
+    dataSiswa.set(nama, { kelas, nilai });
+    statusManual.textContent = `✅ ${nama} ditambahkan.`;
+  }
+
+  document.getElementById("inNama").value = "";
+  document.getElementById("inKelas").value = "";
+  document.getElementById("inNilai").value = "";
+  document.getElementById("inNama").focus();
+  renderHasil();
+});
+
+// Enter di form = klik Tambah
+["inNama", "inKelas", "inNilai"].forEach(id => {
+  document.getElementById(id).addEventListener("keydown", e => {
+    if (e.key === "Enter") document.getElementById("btnTambah").click();
+  });
 });
 
 // ==============================
 // RENDER TABEL
 // ==============================
-function renderTabel() {
-  resultBody.innerHTML = dataHasil.map((s, i) => {
+function getSorted() {
+  return [...dataSiswa.entries()].map(([nama, info]) => ({
+    nama,
+    kelas: info.kelas,
+    nilai: info.nilai,
+    total: info.nilai.reduce((a, b) => a + b, 0)
+  })).sort((a, b) => b.total - a.total);
+}
+
+function renderHasil() {
+  if (dataSiswa.size === 0) {
+    resultCard.classList.add("hidden");
+    return;
+  }
+  const sorted = getSorted();
+
+  resultBody.innerHTML = sorted.map((s, i) => {
     const rank = i + 1;
     const cls = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "";
     return `<tr class="${cls}">
       <td class="num-col">${rank}</td>
-      <td>${s.nama}</td>
-      <td class="num-col">${s.kelas}</td>
-      <td>${s.nilai.join(", ") || "-"}</td>
+      <td>
+        <input class="editable" value="${escapeAttr(s.nama)}"
+               onchange="editNama('${escapeAttr(s.nama)}', this.value)">
+      </td>
+      <td>
+        <input class="editable" value="${escapeAttr(s.kelas)}"
+               onchange="editKelas('${escapeAttr(s.nama)}', this.value)">
+      </td>
+      <td>
+        <input class="editable" value="${s.nilai.join(', ')}"
+               onchange="editNilai('${escapeAttr(s.nama)}', this.value)">
+      </td>
       <td class="total-col">${s.total}</td>
+      <td class="num-col">
+        <button class="danger" onclick="hapusSiswa('${escapeAttr(s.nama)}')">✕</button>
+      </td>
     </tr>`;
   }).join("");
 
-  summaryEl.textContent = `Total siswa: ${dataHasil.length}`;
+  summaryEl.textContent = `— ${sorted.length} siswa`;
   resultCard.classList.remove("hidden");
 }
 
 // ==============================
-// DOWNLOAD CSV
+// EDIT INLINE
 // ==============================
+function editNama(namaLama, namaBaru) {
+  namaBaru = namaBaru.trim();
+  if (!namaBaru || namaBaru === namaLama) return renderHasil();
+  if (dataSiswa.has(namaBaru)) {
+    alert("Nama sudah ada!");
+    return renderHasil();
+  }
+  const info = dataSiswa.get(namaLama);
+  dataSiswa.delete(namaLama);
+  dataSiswa.set(namaBaru, info);
+  renderHasil();
+}
+
+function editKelas(nama, kelasBaru) {
+  if (dataSiswa.has(nama)) {
+    dataSiswa.get(nama).kelas = kelasBaru.trim() || "-";
+    renderHasil();
+  }
+}
+
+function editNilai(nama, teksNilai) {
+  const nilai = teksNilai.split(/[,\s]+/).map(Number).filter(n => !isNaN(n));
+  if (dataSiswa.has(nama)) {
+    dataSiswa.get(nama).nilai = nilai;
+    renderHasil();
+  }
+}
+
+function hapusSiswa(nama) {
+  if (confirm(`Hapus ${nama}?`)) {
+    dataSiswa.delete(nama);
+    renderHasil();
+  }
+}
+
+// ==============================
+// UTIL
+// ==============================
+function escapeAttr(s) {
+  return String(s).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
 function downloadCSV() {
+  const sorted = getSorted();
   const header = ["Peringkat", "Nama", "Kelas", "Nilai", "Total"];
-  const rows = dataHasil.map((s, i) => [
-    i + 1, `"${s.nama}"`, s.kelas, `"${s.nilai.join(", ")}"`, s.total
+  const rows = sorted.map((s, i) => [
+    i + 1, `"${s.nama}"`, s.kelas, `"${s.nilai.join(', ')}"`, s.total
   ]);
   const csv = [header, ...rows].map(r => r.join(",")).join("\n");
-
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = "hasil_ranking.csv";
   a.click();
   URL.revokeObjectURL(url);
+}
+
+function resetSemua() {
+  if (confirm("Hapus semua data siswa?")) {
+    dataSiswa.clear();
+    files = [];
+    renderFileList();
+    statusPdf.textContent = "";
+    statusManual.textContent = "";
+    renderHasil();
+  }
 }
 </script>
 </body>
